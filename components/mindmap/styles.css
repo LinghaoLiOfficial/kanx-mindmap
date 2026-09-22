@@ -1,0 +1,659 @@
+@import "@xyflow/react/dist/style.css";
+
+/* All editor rules are scoped so importing the package cannot reset host styles. */
+
+.mindmap-root {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "PingFang SC",
+    "Microsoft YaHei",
+    sans-serif;
+  color: #343c3d;
+  box-sizing: border-box;
+  /* Defaults keep the component usable without an external theme. */
+  --map-root: #426b5d;
+  --map-canvas: #f8f9f6;
+  --branch: #668b76;
+}
+.mindmap-root *,
+.mindmap-root *::before,
+.mindmap-root *::after {
+  box-sizing: border-box;
+}
+.mindmap-root button {
+  font: inherit;
+  cursor: pointer;
+}
+.mindmap-root button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+.mindmap-root button:focus-visible {
+  outline: 2px solid #568b7d;
+  outline-offset: 4px;
+}
+.mindmap-root.editor-shell {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  background: #fafbf8;
+  overflow: hidden;
+}
+.mindmap-root .app-header {
+  height: 49px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  background: #fff;
+  border-bottom: 1px solid #eceee9;
+}
+.mindmap-root .document-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #566159;
+  font-size: 14px;
+}
+.mindmap-root .header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.mindmap-root .header-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #657261;
+  font-size: 12px;
+}
+.mindmap-root .header-action:hover {
+  background: #eff3ed;
+  color: #426b5d;
+}
+.mindmap-root .zoom-controls button:hover {
+  background: #eff3ed;
+}
+.mindmap-root .tooltip-button {
+  position: relative;
+}
+@media (hover: hover) {
+  .mindmap-root .tooltip-button::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%) translateY(3px);
+    z-index: 30;
+    padding: 5px 8px;
+    border-radius: 4px;
+    background: #35413a;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1.2;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 120ms ease,
+      transform 120ms ease;
+  }
+  .mindmap-root .tooltip-button:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+.mindmap-root .canvas-area {
+  flex: 1;
+  position: relative;
+  min-height: 0;
+  background: var(--map-canvas, #f8f9f6);
+}
+.mindmap-root .topic {
+  position: relative;
+  width: max-content;
+  min-width: 105px;
+  max-width: 260px;
+  padding: 13px 20px;
+  border: 1px solid color-mix(in srgb, var(--branch, #b8c5bd) 45%, white);
+  border-radius: 9px;
+  background: #fff;
+  color: #45504b;
+  box-shadow: 0 2px 4px #33463205;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.mindmap-root .topic-content > span {
+  display: block;
+  min-height: 21px;
+}
+.mindmap-root .topic.topic-image {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  max-width: none;
+  padding: 0;
+  overflow: visible;
+  background: #fff;
+}
+.mindmap-root .image-topic {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.mindmap-root .image-topic img,
+.mindmap-root .image-placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+.mindmap-root .image-placeholder {
+  background:
+    linear-gradient(135deg, transparent 48%, #cbd4ce 49%, #cbd4ce 51%, transparent 52%),
+    #eef1ee;
+}
+.mindmap-root .image-resize-handle {
+  width: 13px !important;
+  height: 13px !important;
+  right: -8px !important;
+  bottom: -8px !important;
+  border: 2px solid #fff !important;
+  border-radius: 50% !important;
+  background: var(--branch, #668b76) !important;
+}
+.mindmap-root .topic-root {
+  background: var(--map-root, #426b5d);
+  color: #fff;
+  border-color: var(--map-root, #426b5d);
+  border-radius: 13px;
+  padding: 21px 28px;
+  min-width: 220px;
+  max-width: 300px;
+  font-size: 20px;
+  font-weight: 600;
+  box-shadow: 0 5px 18px #426b5d16;
+}
+.mindmap-root .topic:hover {
+  box-shadow: 0 3px 12px #33463214;
+}
+.mindmap-root .topic.is-selected {
+  outline: 2px solid var(--branch, #668b76);
+  outline-offset: 4px;
+}
+.mindmap-root .topic-root.is-selected {
+  outline-color: color-mix(in srgb, var(--map-root, #426b5d) 50%, white);
+}
+.mindmap-root .topic-content {
+  position: relative;
+}
+.mindmap-root .topic.is-editing .topic-content > span {
+  visibility: hidden;
+}
+.mindmap-root .topic:not(.is-editing) textarea {
+  opacity: 0;
+  pointer-events: none;
+}
+.mindmap-root .topic textarea {
+  position: absolute;
+  inset: 0;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  resize: none;
+  font: inherit;
+  line-height: inherit;
+  background: transparent;
+  color: inherit;
+  overflow: hidden;
+}
+.mindmap-root .topic .react-flow__handle {
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  border: 0;
+  min-width: 0;
+  min-height: 0;
+}
+.mindmap-root .fold-toggle {
+  position: absolute;
+  right: -10px;
+  top: calc(50% - 9px);
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--branch);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--branch);
+  font-size: 11px;
+  display: grid;
+  place-items: center;
+  line-height: 1;
+  padding: 0;
+}
+.mindmap-root .react-flow__node {
+  /* Apply layout positions immediately so topics stay aligned with edges. */
+  transition: none;
+}
+.mindmap-root .is-dragging .react-flow__node.dragging {
+  opacity: 0.6;
+}
+.mindmap-root .react-flow__node.drop-child .topic {
+  outline: 3px solid #426b5d;
+  outline-offset: 5px;
+  background: #edf6ef;
+  color: #426b5d;
+}
+.mindmap-root .react-flow__node.drop-before::before,
+.mindmap-root .react-flow__node.drop-after::after {
+  content: "";
+  position: absolute;
+  left: -12px;
+  right: -12px;
+  height: 3px;
+  background: var(--map-root, #426b5d);
+  border-radius: 3px;
+}
+.mindmap-root .react-flow__node.drop-before::before {
+  top: -9px;
+}
+.mindmap-root .react-flow__node.drop-after::after {
+  bottom: -9px;
+}
+.mindmap-root .canvas-area:not(.is-ready) .react-flow {
+  opacity: 0;
+}
+.mindmap-root .loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #87988c;
+  font-size: 14px;
+}
+.mindmap-root .statusbar {
+  height: 49px;
+  flex-shrink: 0;
+  background: #fff;
+  border-top: 1px solid #e7ebe3;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 25px;
+  color: #8e978d;
+  font-size: 11px;
+}
+.mindmap-root .map-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.mindmap-root .status-divider {
+  display: inline-block;
+  width: 1px;
+  height: 15px;
+  background: #e6eae3;
+  margin: 0 4px;
+}
+.mindmap-root .zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+}
+.mindmap-root .toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.mindmap-root .zoom-controls button,
+.mindmap-root .toolbar-actions button {
+  border: 0;
+  background: none;
+  height: 28px;
+  min-width: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  color: #657261;
+  font-size: 11px;
+}
+.mindmap-root .measurement {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.mindmap-root .measurement .topic {
+  margin-bottom: 10px;
+}
+.mindmap-root .help-panel {
+  position: relative;
+  width: 320px;
+  padding: 22px;
+  z-index: 10;
+  background: white;
+  border: 1px solid #e2e8df;
+  border-radius: 14px;
+  box-shadow: 0 12px 50px #24392320;
+  font-size: 12px;
+}
+.mindmap-root .help-panel[hidden],
+.mindmap-root .palette-panel[hidden] {
+  display: none;
+}
+.mindmap-root .popup-layer {
+  position: absolute;
+  top: 67px;
+  right: 18px;
+  width: max-content;
+  z-index: 12;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  pointer-events: none;
+}
+.mindmap-root .popup-layer > * {
+  pointer-events: auto;
+}
+.mindmap-root .popup-layer.has-palette.has-help {
+  flex-direction: row;
+  align-items: flex-end;
+}
+.mindmap-root .popup-layer.has-palette .palette-panel {
+  max-height: calc(100dvh - 134px);
+}
+.mindmap-root .popup-layer:not(.has-palette) {
+  top: auto;
+  right: 25px;
+  bottom: 75px;
+}
+.mindmap-root .help-panel > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+.mindmap-root .help-panel button,
+.mindmap-root .error-toast button {
+  border: 0;
+  background: none;
+  color: #788574;
+}
+.mindmap-root .help-close {
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px !important;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 120ms ease,
+    color 120ms ease,
+    transform 120ms ease;
+}
+.mindmap-root .help-close:hover {
+  background: #eff3ed !important;
+  color: #426b5d !important;
+}
+.mindmap-root .help-close:active {
+  transform: scale(0.92);
+}
+.mindmap-root .help-panel p {
+  display: flex;
+  justify-content: space-between;
+  color: #596950;
+}
+.mindmap-root .help-panel p span {
+  color: #8b9585;
+}
+.mindmap-root .error-toast,
+.mindmap-root .drag-message {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 75px;
+  padding: 12px 20px;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: 0 4px 25px #293e3520;
+  z-index: 20;
+  font-size: 13px;
+}
+.mindmap-root .error-toast {
+  color: #a44736;
+}
+.mindmap-root .error-toast button {
+  margin-left: 15px;
+}
+.mindmap-root .drag-message {
+  bottom: 20px;
+  color: #426b5d;
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .mindmap-root .app-header {
+    padding: 0 16px;
+  }
+  .mindmap-root .statusbar {
+    padding: 0 12px;
+    gap: 8px;
+  }
+  .mindmap-root .map-info {
+    gap: 5px;
+  }
+  .mindmap-root .map-info .status-divider,
+  .mindmap-root .map-info > span:last-child {
+    display: none;
+  }
+  .mindmap-root .help-panel {
+    max-width: calc(100vw - 24px);
+  }
+  .mindmap-root .popup-layer {
+    top: 61px;
+    right: 12px;
+    gap: 8px;
+    max-width: calc(100vw - 24px);
+  }
+  .mindmap-root .popup-layer:not(.has-palette) {
+    top: auto;
+    right: 12px;
+  }
+  .mindmap-root .popup-layer.has-palette .help-panel {
+    width: min(320px, calc(45vw - 8px));
+    min-width: 0;
+  }
+  .mindmap-root .popup-layer.has-palette .palette-panel {
+    max-height: calc(100dvh - 122px);
+  }
+}
+
+/* A resting canvas/node uses the normal pointer; grabbing is a pressed state. */
+.mindmap-root .canvas-area .react-flow__pane.draggable,
+.mindmap-root .canvas-area .react-flow__node.draggable {
+  cursor: default;
+}
+.mindmap-root .canvas-area.is-pointer-held .react-flow__pane.draggable,
+.mindmap-root .canvas-area.is-pointer-held .react-flow__node.draggable {
+  cursor: grabbing;
+}
+
+.mindmap-root .palette-toggle {
+  margin-left: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #657261;
+  font-size: 12px;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+}
+.mindmap-root .palette-toggle:hover,
+.mindmap-root .palette-toggle[aria-expanded="true"] {
+  background: #eff3ed;
+  border-color: #dfe7dc;
+  color: #426b5d;
+}
+.mindmap-root .palette-panel {
+  position: relative;
+  flex: 0 0 300px;
+  width: 300px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100% - 36px);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px 14px;
+  border: 1px solid #e4e9e1;
+  border-radius: 16px;
+  background: #fffffffa;
+  box-shadow:
+    0 12px 42px #253e3514,
+    0 2px 8px #253e3508;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(28px) scale(0.98);
+  transform-origin: top right;
+  pointer-events: none;
+  transition:
+    opacity 220ms ease,
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 260ms;
+}
+.mindmap-root .palette-panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+.mindmap-root .palette-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px 16px;
+}
+.mindmap-root .palette-heading h2 {
+  margin: 0 0 6px;
+  color: #36463d;
+  font-size: 15px;
+  font-weight: 600;
+}
+.mindmap-root .palette-close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 27px;
+  height: 27px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #859087;
+}
+.mindmap-root .palette-close:hover {
+  background: #eff3ed;
+  color: #426b5d;
+}
+.mindmap-root .palette-options {
+  display: grid;
+  gap: 8px;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 5px;
+  margin: -5px;
+  scrollbar-width: thin;
+  scrollbar-color: #d8e0d6 transparent;
+}
+.mindmap-root .palette-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 11px 12px;
+  border: 1px solid #e9ece6;
+  border-radius: 10px;
+  background: #fff;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease;
+}
+.mindmap-root .palette-option:hover {
+  border-color: #b9c9b9;
+  background: #fafbf8;
+}
+.mindmap-root .palette-option.is-active {
+  border-color: #7d9e89;
+  background: #f4f8f2;
+}
+.mindmap-root .palette-option-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 18px;
+  color: #46624e;
+  font-size: 12px;
+}
+.mindmap-root .palette-option-title strong {
+  font-weight: 600;
+}
+.mindmap-root .palette-description {
+  display: block;
+  margin-top: 2px;
+  color: #90978e;
+  font-size: 10px;
+}
+.mindmap-root .palette-swatches {
+  display: flex;
+  gap: 4px;
+  margin-top: 9px;
+}
+.mindmap-root .palette-swatches > span {
+  flex: 1;
+  height: 12px;
+  border-radius: 3px;
+}
+@media (max-width: 700px) {
+  .mindmap-root .header-action span {
+    display: none;
+  }
+  .mindmap-root .palette-panel {
+    width: min(300px, calc(55vw - 8px));
+    flex-basis: min(300px, calc(55vw - 8px));
+    max-height: calc(100% - 24px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mindmap-root .palette-panel,
+  .mindmap-root .palette-toggle,
+  .mindmap-root .palette-option {
+    transition: none;
+  }
+}
