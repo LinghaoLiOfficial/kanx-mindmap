@@ -1,0 +1,92 @@
+{
+  "name": "kanx-mindmap",
+  "version": "0.1.0",
+  "private": false,
+  "description": "Composable React mind map editor built with React Flow and ELK.",
+  "license": "Apache-2.0",
+  "author": "Linghao Li",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LinghaoLiOfficial/kanx-mindmap.git"
+  },
+  "homepage": "https://github.com/LinghaoLiOfficial/kanx-mindmap#readme",
+  "bugs": {
+    "url": "https://github.com/LinghaoLiOfficial/kanx-mindmap/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/style.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "next dev --turbopack -p 3001",
+    "build": "pnpm build:lib && pnpm build:demo",
+    "build:lib": "tsup && pnpm build:css",
+    "build:css": "esbuild components/mindmap/styles.css --bundle --outfile=dist/style.css",
+    "build:demo": "next build",
+    "start": "next start -p 3001",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "pnpm typecheck && pnpm lint && pnpm test && pnpm build:lib"
+  },
+  "packageManager": "pnpm@10.0.0",
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
+    "@xyflow/react": "^12.11.6",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "elkjs": "^0.12.0",
+    "lucide-react": "^0.511.0",
+    "tailwind-merge": "^3.3.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@testing-library/react": "^16.3.0",
+    "@tailwindcss/postcss": "^4.1.10",
+    "@types/node": "^22.15.30",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "esbuild": "^0.27.0",
+    "eslint": "^9.28.0",
+    "eslint-config-next": "16.2.0",
+    "jsdom": "^27.0.0",
+    "next": "16.2.0",
+    "postcss": "^8.5.4",
+    "prettier": "^3.9.8",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "tailwindcss": "^4.1.10",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3",
+    "vitest": "^5.0.1"
+  },
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20"
+  }
+}
