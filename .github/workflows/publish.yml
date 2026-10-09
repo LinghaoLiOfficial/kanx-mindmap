@@ -13,22 +13,43 @@ permissions:
 jobs:
   publish:
     name: Verify and publish
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v5
         with:
           version: 10.0.0
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
-          cache: pnpm
+          node-version: 24
+          package-manager-cache: false
           registry-url: https://registry.npmjs.org
+
+      - name: Verify release runtime
+        run: |
+          NODE_VERSION="$(node --version)"
+          NPM_VERSION="$(npm --version)"
+          echo "Node.js $NODE_VERSION"
+          echo "npm $NPM_VERSION"
+          node - "$NPM_VERSION" <<'NODE'
+          const current = process.argv[2].split('.').map(Number)
+          const minimum = [11, 5, 1]
+          let supported = true
+          for (let index = 0; index < minimum.length; index += 1) {
+            if (current[index] === minimum[index]) continue
+            supported = current[index] > minimum[index]
+            break
+          }
+          if (!supported) {
+            console.error(`npm ${process.argv[2]} is too old for trusted publishing; expected >=11.5.1`)
+            process.exit(1)
+          }
+          NODE
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -45,13 +66,41 @@ jobs:
           fi
 
       - name: Check package
-        run: pnpm prepublishOnly
+        run: |
+          pnpm prepublishOnly
+          npm pack --dry-run --ignore-scripts --json
 
       - name: Publish package
         run: |
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
           if [[ "$PACKAGE_VERSION" == *-* ]]; then
-            npm publish --access public --provenance --tag next
+            npm publish --ignore-scripts --access public --tag next
           else
-            npm publish --access public --provenance --tag latest
+            npm publish --ignore-scripts --access public --tag latest
           fi
+
+      - name: Verify published package
+        run: |
+          PACKAGE_NAME="$(node -p "require('./package.json').name")"
+          PACKAGE_VERSION="$(node -p "require('./package.json').version")"
+          if [[ "$PACKAGE_VERSION" == *-* ]]; then
+            DIST_TAG="next"
+          else
+            DIST_TAG="latest"
+          fi
+
+          for ATTEMPT in 1 2 3; do
+            PUBLISHED_VERSION="$(npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version --registry=https://registry.npmjs.org 2>/dev/null || true)"
+            TAG_VERSION="$(npm view "$PACKAGE_NAME" "dist-tags.$DIST_TAG" --registry=https://registry.npmjs.org 2>/dev/null || true)"
+            if [ "$PUBLISHED_VERSION" = "$PACKAGE_VERSION" ] && [ "$TAG_VERSION" = "$PACKAGE_VERSION" ]; then
+              echo "$PACKAGE_NAME@$PACKAGE_VERSION is published with dist-tag $DIST_TAG"
+              exit 0
+            fi
+            if [ "$ATTEMPT" -lt 3 ]; then
+              echo "Registry verification attempt $ATTEMPT failed; retrying in 10 seconds"
+              sleep 10
+            fi
+          done
+
+          echo "Registry verification failed for $PACKAGE_NAME@$PACKAGE_VERSION and dist-tag $DIST_TAG"
+          exit 1
