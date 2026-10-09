@@ -125,7 +125,15 @@ test("add child/sibling, edit commit/cancel/blank/multiline, navigate and delete
   const id = t.nodes.discover.children.at(-1)!;
   await expect(topic(page, id)).toBeVisible();
   await page.keyboard.press("F2");
-  await page.getByRole("textbox", { name: "主题文本" }).fill("新的中文主题");
+  const newTopicInput = page.getByRole("textbox", { name: "主题文本" });
+  await expect(newTopicInput).toHaveValue("新主题");
+  expect(
+    await newTopicInput.evaluate((el: HTMLTextAreaElement) => [
+      el.selectionStart,
+      el.selectionEnd,
+    ]),
+  ).toEqual([0, 3]);
+  await newTopicInput.fill("新的中文主题");
   await page.keyboard.press("Enter");
   await expect(topic(page, id)).toHaveText("新的中文主题");
   await page.keyboard.press("F2");
@@ -745,7 +753,7 @@ test("editing preserves initial geometry then grows with draft", async ({
       el.selectionStart,
       el.selectionEnd,
     ]),
-  ).toEqual([0, 4]);
+  ).toEqual([4, 4]);
   expect(await geometry()).toEqual(before);
   await expect(input).toHaveCSS("resize", "none");
   await expect(canvas).toHaveScreenshot("topic-editing.png", {
@@ -810,11 +818,13 @@ for (const mode of ["letters", "ime"] as const) {
     } else {
       const client = await page.context().newCDPSession(page);
       await client.send("Input.imeSetComposition", {
-        text: "文献",
-        selectionStart: 2,
-        selectionEnd: 2,
+        text: "文",
+        selectionStart: 1,
+        selectionEnd: 1,
       });
+      await expect(child.locator("textarea")).toHaveValue("文");
       await client.send("Input.insertText", { text: "文献元数据" });
+      await client.detach();
     }
     await expect(child).toHaveClass(/is-editing/);
     await page.keyboard.press("Enter");

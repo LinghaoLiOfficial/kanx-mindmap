@@ -1,6 +1,6 @@
 {
-  "name": "kanx-mindmap",
-  "version": "0.1.0",
+  "name": "@linghaoliofficial/kanx-mindmap",
+  "version": "0.1.1",
   "private": false,
   "description": "Composable React mind map editor built with React Flow and ELK.",
   "license": "Apache-2.0",
@@ -38,7 +38,8 @@
     "**/*.css"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "scripts": {
     "dev": "next dev --turbopack -p 3001",
@@ -66,16 +67,16 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
-    "@testing-library/react": "^16.3.0",
     "@tailwindcss/postcss": "^4.1.10",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^22.15.30",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "esbuild": "^0.27.0",
     "eslint": "^9.28.0",
-    "eslint-config-next": "16.2.0",
+    "eslint-config-next": "16.4.0",
     "jsdom": "^27.0.0",
-    "next": "16.2.0",
+    "next": "16.4.0",
     "postcss": "^8.5.4",
     "prettier": "^3.9.8",
     "react": "19.1.0",

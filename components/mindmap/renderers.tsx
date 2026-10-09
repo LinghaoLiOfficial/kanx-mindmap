@@ -193,7 +193,10 @@ const Topic = memo(function Topic({ id, data }: NodeProps<TopicNode>) {
       onDoubleClick={(e) => {
         e.stopPropagation();
         store.getState().select(id);
-        if (topic.kind === "text") store.getState().edit(id);
+        // Supplying the current text selects the end of the draft instead of
+        // selecting everything. This is intentionally distinct from F2, whose
+        // no-initial-text path preserves its replace-all behavior.
+        if (topic.kind === "text") store.getState().edit(id, text);
       }}
     >
       <Handle type="target" position={Position.Left} />

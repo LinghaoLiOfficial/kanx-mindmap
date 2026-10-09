@@ -129,7 +129,7 @@
   background: #fff;
   color: #45504b;
   box-shadow: 0 2px 4px #33463205;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 1.6;
   white-space: pre-wrap;
@@ -137,7 +137,7 @@
 }
 .mindmap-root .topic-content > span {
   display: block;
-  min-height: 21px;
+  min-height: 23px;
 }
 .mindmap-root .topic.topic-image {
   width: 100%;
@@ -186,7 +186,7 @@
   padding: 21px 28px;
   min-width: 220px;
   max-width: 300px;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 600;
   box-shadow: 0 5px 18px #426b5d16;
 }

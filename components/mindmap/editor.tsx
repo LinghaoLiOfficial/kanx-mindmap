@@ -446,8 +446,15 @@ export function MindMapCanvas({
         return;
       }
       if (mod || e.altKey || !n) return;
+      // The selected topic keeps its textarea focused even before editing starts.
+      // Let that control receive printable keys so the browser can start an IME
+      // composition before we create a draft. The non-text canvas shortcuts below
+      // still apply (F2, Tab, Enter, navigation, and deletion).
+      const topicInput =
+        e.target instanceof HTMLTextAreaElement && e.target.closest(".topic");
       if (
         e.key.length === 1 &&
+        !topicInput &&
         !(e.target instanceof HTMLElement && e.target.closest("button,a"))
       ) {
         e.preventDefault();
@@ -660,7 +667,6 @@ export function MindMapCanvas({
             // macOS sends contextmenu instead of click for Control + left click.
             if (event.ctrlKey) selectTopic(event, node);
           }}
-          onNodeDoubleClick={(_, n) => store.getState().edit(n.id)}
           onNodesChange={(changes) =>
             setNodes((ns) => applyNodeChanges(changes.filter((change) => change.type !== "select"), ns))
           }
