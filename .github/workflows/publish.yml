@@ -89,16 +89,17 @@ jobs:
             DIST_TAG="latest"
           fi
 
-          for ATTEMPT in 1 2 3; do
-            PUBLISHED_VERSION="$(npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version --registry=https://registry.npmjs.org 2>/dev/null || true)"
-            TAG_VERSION="$(npm view "$PACKAGE_NAME" "dist-tags.$DIST_TAG" --registry=https://registry.npmjs.org 2>/dev/null || true)"
+          MAX_ATTEMPTS=12
+          for ATTEMPT in $(seq 1 "$MAX_ATTEMPTS"); do
+            PUBLISHED_VERSION="$(npm view "$PACKAGE_NAME@$PACKAGE_VERSION" version --prefer-online --registry=https://registry.npmjs.org 2>/dev/null || true)"
+            TAG_VERSION="$(npm view "$PACKAGE_NAME" "dist-tags.$DIST_TAG" --prefer-online --registry=https://registry.npmjs.org 2>/dev/null || true)"
             if [ "$PUBLISHED_VERSION" = "$PACKAGE_VERSION" ] && [ "$TAG_VERSION" = "$PACKAGE_VERSION" ]; then
               echo "$PACKAGE_NAME@$PACKAGE_VERSION is published with dist-tag $DIST_TAG"
               exit 0
             fi
-            if [ "$ATTEMPT" -lt 3 ]; then
-              echo "Registry verification attempt $ATTEMPT failed; retrying in 10 seconds"
-              sleep 10
+            if [ "$ATTEMPT" -lt "$MAX_ATTEMPTS" ]; then
+              echo "Registry verification attempt $ATTEMPT/$MAX_ATTEMPTS returned version '$PUBLISHED_VERSION' and dist-tag '$TAG_VERSION'; retrying in 30 seconds"
+              sleep 30
             fi
           done
 
