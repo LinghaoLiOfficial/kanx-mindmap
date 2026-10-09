@@ -7,12 +7,12 @@
 ## 安装
 
 ```bash
-pnpm add @linghaoliofficial/kanx-mindmap
+pnpm add kanx-mindmap
 ```
 
 ```tsx
-import { MindMapEditor } from "@linghaoliofficial/kanx-mindmap";
-import "@linghaoliofficial/kanx-mindmap/styles.css";
+import { MindMapEditor } from "kanx-mindmap";
+import "kanx-mindmap/styles.css";
 
 export default function App() {
   return (
@@ -68,7 +68,7 @@ import {
   MindMapCanvas,
   MindMapProvider,
   useMindMap,
-} from "@linghaoliofficial/kanx-mindmap";
+} from "kanx-mindmap";
 
 function Toolbar() {
   const map = useMindMap();
@@ -157,7 +157,7 @@ pnpm pack
 
 ## 发布到公共 npm
 
-发布前请在 npm 中为仓库配置 Trusted Publishing（GitHub Actions，workflow 文件为 `.github/workflows/publish.yml`）。包 `@linghaoliofficial/kanx-mindmap` 发布到 `https://registry.npmjs.org`；旧 GitHub Packages 版本会保留，但不再接收新版本。之后更新 `package.json` 版本并推送 tag：
+发布前请在 npm 中为仓库配置 Trusted Publishing（GitHub Actions，workflow 文件为 `.github/workflows/publish.yml`）。包 `kanx-mindmap` 发布到 `https://registry.npmjs.org`；旧 GitHub Packages 版本会保留，但不再接收新版本。之后更新 `package.json` 版本并推送 tag：
 
 ```bash
 pnpm version patch

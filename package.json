@@ -1,6 +1,6 @@
 {
-  "name": "@linghaoliofficial/kanx-mindmap",
-  "version": "0.1.1",
+  "name": "kanx-mindmap",
+  "version": "0.1.2",
   "private": false,
   "description": "Composable React mind map editor built with React Flow and ELK.",
   "license": "Apache-2.0",
