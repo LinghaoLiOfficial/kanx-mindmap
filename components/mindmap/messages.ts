@@ -25,6 +25,8 @@ export type MindMapMessages = {
   expand: string;
   collapse: string;
   remove: string;
+  downloadImage: string;
+  imageDownloadError: string;
   undo: string;
   redo: string;
   autoLayout: string;
@@ -63,6 +65,8 @@ export const mindMapMessages: Record<MindMapLocale, MindMapMessages> = {
     expand: "展开",
     collapse: "折叠",
     remove: "删除",
+    downloadImage: "下载图片",
+    imageDownloadError: "图片下载失败，请重试。",
     undo: "撤销",
     redo: "重做",
     autoLayout: "自动布局",
@@ -115,6 +119,8 @@ export const mindMapMessages: Record<MindMapLocale, MindMapMessages> = {
     expand: "Expand",
     collapse: "Collapse",
     remove: "Delete",
+    downloadImage: "Download image",
+    imageDownloadError: "The image could not be downloaded. Please try again.",
     undo: "Undo",
     redo: "Redo",
     autoLayout: "Auto layout",

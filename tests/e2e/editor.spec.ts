@@ -692,6 +692,8 @@ test("direct typing replaces once, cancels, undoes and supports native compositi
 
 test("pasting an image creates one image child with its natural ratio", async ({ page }) => {
   await topic(page, "discover").click();
+  const downloadButton = page.getByRole("button", { name: "下载图片", exact: true });
+  await expect(downloadButton).toBeDisabled();
   await page.evaluate(async () => {
     const canvas = document.createElement("canvas");
     canvas.width = 2;
@@ -723,6 +725,19 @@ test("pasting an image creates one image child with its natural ratio", async ({
     image: { width: 200, aspectRatio: 2 },
   });
   await expect(page.locator(".react-flow__node .topic-image")).toHaveCount(1);
+  if (!image || image.kind !== "image") throw new Error("Missing image node");
+  const imageId = image.id;
+  const assetId = image.image.assetId;
+  await topic(page, imageId).click();
+  await expect(downloadButton).toBeEnabled();
+  const downloadPromise = page.waitForEvent("download");
+  await downloadButton.click();
+  const download = await downloadPromise;
+  expect(download.suggestedFilename()).toMatch(
+    new RegExp(`^mindmap-image-${assetId}\\.png$`),
+  );
+  await topic(page, "discover").click({ modifiers: ["Control"] });
+  await expect(downloadButton).toBeDisabled();
 });
 
 test("editing preserves initial geometry then grows with draft", async ({

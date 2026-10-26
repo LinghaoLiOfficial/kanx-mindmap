@@ -33,6 +33,7 @@ import {
   Palette,
   Check,
   X,
+  Download,
 } from "lucide-react";
 import {
   MindMapProvider,
@@ -104,6 +105,13 @@ async function imageAspectRatio(blob: Blob): Promise<number> {
   }
 }
 
+function imageFileExtension(type: string): string {
+  const subtype = type.toLowerCase().split("/")[1]?.split(";")[0];
+  if (subtype === "jpeg") return "jpg";
+  if (subtype && /^[a-z0-9]+$/.test(subtype)) return subtype;
+  return "bin";
+}
+
 export type MindMapCanvasProps = {
   title?: ReactNode;
   showHeader?: boolean;
@@ -159,6 +167,7 @@ export function MindMapCanvas({
   const [error, setError] = useState(""),
     [help, setHelp] = useState(false),
     [layoutTick, setLayoutTick] = useState(0);
+  const [downloadingImage, setDownloadingImage] = useState(false);
   const [internalPaletteId, setInternalPaletteId] = useState(
     defaultPaletteId ?? palettes[0]?.id,
   );
@@ -226,6 +235,29 @@ export function MindMapCanvas({
   }, [environment, fitView, getViewport, setViewport, zoomIn, zoomOut]);
   const list = visible(tree),
     current = selected ? tree.nodes[selected] : undefined;
+  const selectedImage =
+    selectedIds.length === 1 && current?.kind === "image" ? current : undefined;
+  const downloadSelectedImage = useCallback(async () => {
+    if (!selectedImage || downloadingImage) return;
+    setDownloadingImage(true);
+    try {
+      const blob = await environment.assetStore.load(selectedImage.image.assetId);
+      if (!blob) throw new Error("Image asset not found.");
+      const url = URL.createObjectURL(blob);
+      try {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `mindmap-image-${selectedImage.image.assetId}.${imageFileExtension(blob.type)}`;
+        link.click();
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    } catch {
+      setError(messages.imageDownloadError);
+    } finally {
+      setDownloadingImage(false);
+    }
+  }, [downloadingImage, environment.assetStore, messages.imageDownloadError, selectedImage]);
   // Remove deleted/hidden topics immediately, without waiting for ELK to relayout.
   const visibleIds = new Set(list.map((node) => node.id));
   const visibleNodes = nodes.filter((node) => visibleIds.has(node.id));
@@ -838,6 +870,15 @@ export function MindMapCanvas({
               onClick={remove}
             >
               <Trash2 size={16} />
+            </button>
+            <button
+              className="tooltip-button"
+              aria-label={messages.downloadImage}
+              data-tooltip={messages.downloadImage}
+              disabled={!selectedImage || downloadingImage}
+              onClick={() => void downloadSelectedImage()}
+            >
+              <Download size={16} />
             </button>
             <span className="status-divider" aria-hidden="true" />
             <button
